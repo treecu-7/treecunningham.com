@@ -99,8 +99,8 @@
 .container {
   background-image: url(assets/images/background.jpg);
   background-size: cover;
-  width: 800px;
-  height: 550px;
+  width: 700px;
+  height: 400px;
   position: absolute;
   top: 47.5%;
   left: 50%;
@@ -125,7 +125,7 @@
 }
 
 .container h2 {
-  margin-top: 12px;
+  margin-top: 37px;
 }
 
 .row {
@@ -133,38 +133,12 @@
   left: 15%;
   top: 12.5%;
   width: 70%;
-  margin-top: 0px;
+  margin-top: 75px;
   padding: 0px;
 }
-
-input[type=text], textarea {
-  width: 100%;
-  padding: 5px;
-  margin-top: 0px;
-  margin-bottom: 2px;
-  resize: vertical;
-  background-color: #ff0000;
-  border: none;
-}
-
-input[type=submit] {
-  background-color: #000000;
-  color: #ff0000;
-  padding: 3px 5px;
-  border: solid;
-  border-width: 2px;
-  cursor: pointer;
-  font-family: inherit;
-  margin-top: 8px;
-}
-
 
 .column {
   float: left;
   width: 33.33%;
   padding: 0px;
-}
-
-.user-cannot-see {
-  display: none;
 }
