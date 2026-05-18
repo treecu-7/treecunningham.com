@@ -1,69 +1,52 @@
 <?php
 
-session_start();
+session_start()
 
-function check_honeypot(){
-    // check the honeypot
-    if(filter_has_var(INPUT_POST, 'honeypot')){
-        $honeypot = trim($_POST['honeypot']);
-        if ($honeypot) {
-            header($_SERVER['SERVER_PROTOCOL'] . ' 405 Method Not Allowed');
-            exit;
-        }
-    }
+$honeypot = filter_input(INPUT_POST, 'sname', FILTER_SANITIZA_STRING);
+
+if ($honeypot) {
+    header($_SERVER['SERVER_PROTOCOL'] . '405 Method Not Allowed');
+    exit;
 }
 
-function send_email($from_email, $message, $subject, $recipient_email) {
-    // Email header
-    $headers[] = 'MIME-Version: 1.0';
-    $headers[] = 'Content-type: text/html; charset=utf-8';
-    $headers[] = "To: $recipient_email";
-    $headers[] = "From: $from_email";
-    $header = implode('\r\n', $headers);
+$errors = [];
 
-    // send email
-    mail($recipient_email, $subject, $message, $header);
+if (!empty($_POST)) {
+   $name = $_POST['name'];
+   $email = $_POST['email'];
+   $subject = $_POST['subject'];
+   $message = $_POST['message'];
+  
+   if (empty($name)) {
+       $errors[] = 'Name is empty';
+   }
+
+   if (empty($email)) {
+       $errors[] = 'Email is empty';
+   } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+       $errors[] = 'Email is invalid';
+   }
+
+   if (empty($subject)) {
+       $errors[] = 'Subject is empty';
+   }
+
+   if (empty($message)) {
+       $errors[] = 'Message is empty';
+   }
 }
 
+return ['mail' => ['to_email' => 'eacunningham05@gmail.com']];
 
-$request_method = $_SERVER['REQUEST_METHOD'];
+if (isset($_POST['submit'])) {
+    $name = $_POST['name'];
+    $mailFrom = $_POST['email'];
+    $subject = $_POST['subject'];
+    $message = $_POST['message'];
 
+    $mailTo = "eacunningham05@gmail.com";
+    $headers = "From: ".$mailFrom;
+    $txt = "You have received an e-mail from ".$.name.".\n\n".$message;
 
-if($request_method === 'POST') {
-   
-    $config = [
-        'mail' => [
-            'to_email' => 'eacunningham05@gmail.com'
-        ]
-    ];
-
-    // check honeypot
-    check_honeypot();
-
-    // validate inputs
-    [$inputs, $errors] = validate();
-
-    if(empty($errors)) {
-        // send email
-        $from_email = $inputs['email'];
-        $subject = $inputs['subject'];
-        $message = nl2br(htmlspecialchars($inputs['message']));
-        
-        send_email($from_email, $message, $subject, $config['mail']['to_email']);
-
-        // success message
-        $_SESSION['success_message'] =  'Thanks for contacting us! We will be in touch with you shortly.';
-
-    } else {
-
-        $_SESSION['error_message'] =  'Please fix the following errors';
-        $_SESSION['errors'] =   $errors;
-        $_SESSION['inputs'] =   $inputs;
-        
-    }
-
-    header('Location: ' . $_SERVER['PHP_SELF'], true, 303);
-    exit;   
-    
-
-} 
+    mail($mailTo, $subject, $txt, $headers);
+}
