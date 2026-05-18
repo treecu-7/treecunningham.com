@@ -165,3 +165,6 @@ input[type=submit] {
   padding: 0px;
 }
 
+.user-cannot-see {
+  display: none;
+}

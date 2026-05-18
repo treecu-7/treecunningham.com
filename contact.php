@@ -1,25 +1,69 @@
 <?php
-// Get data from form  
-$name = $_POST['name'];
-$email= $_POST['email'];
-$message= $_POST['message'];
 
-$to = "eacunningham05@gmail.com";
-$subject = $_POST['subject'];
+session_start();
 
-// The following text will be sent
-// Name = user entered name
-// Email = user entered email
-// Message = user entered message 
-$txt ="Name = ". $name . "\r\n  Email = " 
-    . $email . "\r\n Message =" . $message;
-
-$headers = "From: noreply@demosite.com" . "\r\n" .
-            "CC: somebodyelse@example.com";
-if($email != NULL) {
-    mail($to, $subject, $txt, $headers);
+function check_honeypot(){
+    // check the honeypot
+    if(filter_has_var(INPUT_POST, 'honeypot')){
+        $honeypot = trim($_POST['honeypot']);
+        if ($honeypot) {
+            header($_SERVER['SERVER_PROTOCOL'] . ' 405 Method Not Allowed');
+            exit;
+        }
+    }
 }
 
-// Redirect to
-header("Location:last.html");
-?>
+function send_email($from_email, $message, $subject, $recipient_email) {
+    // Email header
+    $headers[] = 'MIME-Version: 1.0';
+    $headers[] = 'Content-type: text/html; charset=utf-8';
+    $headers[] = "To: $recipient_email";
+    $headers[] = "From: $from_email";
+    $header = implode('\r\n', $headers);
+
+    // send email
+    mail($recipient_email, $subject, $message, $header);
+}
+
+
+$request_method = $_SERVER['REQUEST_METHOD'];
+
+
+if($request_method === 'POST') {
+   
+    $config = [
+        'mail' => [
+            'to_email' => 'eacunningham05@gmail.com'
+        ]
+    ];
+
+    // check honeypot
+    check_honeypot();
+
+    // validate inputs
+    [$inputs, $errors] = validate();
+
+    if(empty($errors)) {
+        // send email
+        $from_email = $inputs['email'];
+        $subject = $inputs['subject'];
+        $message = nl2br(htmlspecialchars($inputs['message']));
+        
+        send_email($from_email, $message, $subject, $config['mail']['to_email']);
+
+        // success message
+        $_SESSION['success_message'] =  'Thanks for contacting us! We will be in touch with you shortly.';
+
+    } else {
+
+        $_SESSION['error_message'] =  'Please fix the following errors';
+        $_SESSION['errors'] =   $errors;
+        $_SESSION['inputs'] =   $inputs;
+        
+    }
+
+    header('Location: ' . $_SERVER['PHP_SELF'], true, 303);
+    exit;   
+    
+
+} 

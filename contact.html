@@ -29,6 +29,8 @@
          <form style="text-align: left;" method="post" action="contact.php">
             <label for="name">name</label>
             <input type="text" id="name" name="name" required>
+            <label for="sname" aria-hidden="true" class="user-cannot-see">surname</label>
+            <input type="text" name="sname" id="sname" class="user-cannot-see" autocomplete="off" tabindex="-1">
             <label for="email">email</label>
             <input type="text" id="email" name="email" required>
             <label for="subjet">subject</label>
